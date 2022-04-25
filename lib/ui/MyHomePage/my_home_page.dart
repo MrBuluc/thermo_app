@@ -21,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int minA = -50, maxA = 50, newMinA = 0, newMaxA = 50;
 
-  DateTime now = DateTime.now();
+  Timestamp now = Timestamp.now();
 
   late StreamSubscription<Event> streamSubscription;
 
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Center(
                 child: Row(
               children: [
-                Text(formatDateTime(now, ".")),
+                Text(History.formatDateTime(now, ".")),
                 IconButton(
                   icon: const Icon(Icons.history),
                   iconSize: 28,
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           thermo = value["thermo"];
           light = value["light"];
-          now = DateTime.now();
+          now = Timestamp.now();
         });
         writeToDb(value);
       });
@@ -121,21 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future writeToDb(Map<dynamic, dynamic> map) async {
-    map["tarih"] = formatDateTime(now, ".");
+    map["tarih"] = now;
     await historyRef.add(History.fromJson(map));
   }
-
-  String formatDateTime(DateTime now, String separator) =>
-      now.hour.toString() +
-      ":" +
-      now.toString().substring(14, 16) +
-      " " +
-      now.day.toString() +
-      separator +
-      now.toString().substring(5, 7) +
-      separator +
-      now.year.toString() +
-      " ";
 
   int normalization(double v, int minA, int maxA, int newMinA, int newMaxA) =>
       (((v - minA) / (maxA - minA) * (newMaxA - newMinA)) + newMinA).toInt();

@@ -80,6 +80,7 @@ class _HistoryPageState extends State<HistoryPage> {
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
       historyList.add(doc.data() as History);
     }
+    historyList.sort();
     readed = true;
   }
 
@@ -88,7 +89,7 @@ class _HistoryPageState extends State<HistoryPage> {
     for (History history in historyList) {
       DataRow dataRow = DataRow(cells: [
         DataCell(Text(
-          history.tarih,
+          History.formatDateTime(history.tarih, "."),
           style: const TextStyle(fontSize: 15),
         )),
         DataCell(Text(
