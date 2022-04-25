@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:thermo_app/models/history.dart';
 
@@ -18,10 +19,17 @@ class _HistoryPageState extends State<HistoryPage> {
 
   late TextStyle colTextStyle;
 
+  late CollectionReference historyRef;
+
   @override
   void initState() {
     super.initState();
     colTextStyle = TextStyle(fontSize: fontSize);
+    historyRef = FirebaseFirestore.instance
+        .collection("history")
+        .withConverter<History>(
+            fromFirestore: (snapshot, _) => History.fromJson(snapshot.data()!),
+            toFirestore: (history, _) => history.toJson());
   }
 
   @override
@@ -35,7 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
         future: read(),
         builder: (context, _) {
           if (!readed) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           return ListView(
             children: [
@@ -67,11 +75,11 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future read() async {
-    historyList = [
-      History("11:22 18.04.2022", 22, 15),
-      History("10:00 18.04.2022", 20, 10),
-      History("09:00 18.04.2022", 10, 5)
-    ];
+    historyList.clear();
+    QuerySnapshot querySnapshot = await historyRef.get();
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      historyList.add(doc.data() as History);
+    }
     readed = true;
   }
 
