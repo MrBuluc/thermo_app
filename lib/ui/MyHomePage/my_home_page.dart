@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
+import 'package:thermo_app/models/history.dart';
+import 'package:thermo_app/ui/History/history_page.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -18,13 +21,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int minA = -50, maxA = 50, newMinA = 0, newMaxA = 50;
 
-  DateTime now;
+  DateTime now = DateTime.now();
 
-  StreamSubscription<Event> streamSubscription;
+  late StreamSubscription<Event> streamSubscription;
+
+  late CollectionReference historyRef;
+
+  FirebaseDatabase firebaseDB = FirebaseDatabase.instance;
+  late DatabaseReference reference;
 
   @override
   void initState() {
+    reference = firebaseDB.reference();
     getListener();
+    historyRef = FirebaseFirestore.instance
+        .collection("history")
+        .withConverter<History>(
+            fromFirestore: (snapshot, _) => History.fromJson(snapshot.data()!),
+            toFirestore: (history, _) => history.toJson());
     super.initState();
   }
 
@@ -41,9 +55,18 @@ class _MyHomePageState extends State<MyHomePage> {
           title: const Text('Thermo App'),
           actions: [
             Center(
-                child: Padding(
-              padding: const EdgeInsets.only(right: 15),
-              child: Text(now == null ? "" : formatDateTime(now, ".")),
+                child: Row(
+              children: [
+                Text(formatDateTime(now, ".")),
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  iconSize: 28,
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HistoryPage())),
+                )
+              ],
             ))
           ],
         ),
@@ -83,8 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future getListener() async {
     try {
-      FirebaseDatabase firebaseDB = FirebaseDatabase.instance;
-      DatabaseReference reference = firebaseDB.reference();
       streamSubscription = reference.onValue.listen((event) {
         Map value = event.snapshot.value;
         setState(() {
@@ -92,10 +113,16 @@ class _MyHomePageState extends State<MyHomePage> {
           light = value["light"];
           now = DateTime.now();
         });
+        writeToDb(value);
       });
     } catch (e) {
       print("hata: " + e.toString());
     }
+  }
+
+  Future writeToDb(Map<dynamic, dynamic> map) async {
+    map["tarih"] = formatDateTime(now, ".");
+    await historyRef.add(History.fromJson(map));
   }
 
   String formatDateTime(DateTime now, String separator) =>
