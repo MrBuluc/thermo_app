@@ -17,9 +17,9 @@ class MyHomePage extends StatefulWidget {
 enum Kind { thermo, light }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double thermo = 0, light = 0;
+  double thermo = 0, light = 0, thermoFontSize = 14, lightFontSize = 10.5;
 
-  int minA = -50, maxA = 50, newMinA = 0, newMaxA = 50;
+  int minA = -50, thermoMaxA = 50, newMinA = 0, newMaxA = 50, lightMaxA = 1023;
 
   Timestamp now = Timestamp.now();
 
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     buildFaProgressBar(
-                      normalization(thermo, minA, maxA, newMinA, newMaxA),
+                      normalization(thermo, minA, thermoMaxA, newMinA, newMaxA),
                       thermo.toString(),
                       Kind.thermo,
                     ),
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       currentValue: currentValue,
       size: 50,
       changeColorValue: 25,
-      maxValue: maxA,
+      maxValue: kind == Kind.thermo ? thermoMaxA : lightMaxA,
       changeProgressColor: kind == Kind.thermo ? Colors.red : Colors.orange,
       progressColor: kind == Kind.thermo ? Colors.blue : Colors.yellow.shade600,
       backgroundColor: Colors.grey.shade300,
@@ -142,7 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
       verticalDirection: VerticalDirection.up,
       displayText:
           kind == Kind.thermo ? "$displayValue °C" : "$displayValue Lx",
-      displayTextStyle: const TextStyle(color: Colors.black),
+      displayTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: kind == Kind.thermo ? thermoFontSize : lightFontSize),
     );
   }
 
