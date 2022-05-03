@@ -30,6 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
   FirebaseDatabase firebaseDB = FirebaseDatabase.instance;
   late DatabaseReference reference;
 
+  bool turnLight = false;
+
   @override
   void initState() {
     reference = firebaseDB.reference();
@@ -99,6 +101,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 buildText(Kind.light)
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    child: const Text(
+                      "Turn On Light",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    onPressed: () {
+                      turnOnOffLight();
+                    },
+                  )
+                ],
+              ),
             )
           ],
         ));
@@ -111,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           thermo = toDouble(value["thermo"]);
           light = toDouble(value["light"]);
+          turnLight = value["turnLight"];
           now = Timestamp.now();
         });
         writeToDb(value);
@@ -158,5 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
       kind == Kind.thermo ? "Temperature" : "Amount of light",
       style: const TextStyle(fontSize: 20),
     );
+  }
+
+  Future turnOnOffLight() async {
+    await reference.update({"turnLight": !turnLight});
   }
 }
