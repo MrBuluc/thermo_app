@@ -109,8 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
       streamSubscription = reference.onValue.listen((event) {
         Map value = event.snapshot.value;
         setState(() {
-          thermo = value["thermo"];
-          light = value["light"];
+          thermo = toDouble(value["thermo"]);
+          light = toDouble(value["light"]);
           now = Timestamp.now();
         });
         writeToDb(value);
@@ -118,6 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       print("hata: " + e.toString());
     }
+  }
+
+  double toDouble(dynamic value) {
+    if (value.runtimeType == int) return (value as int).toDouble();
+    return value as double;
   }
 
   Future writeToDb(Map<dynamic, dynamic> map) async {

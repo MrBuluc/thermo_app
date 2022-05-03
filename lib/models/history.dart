@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class History implements Comparable<History> {
   Timestamp tarih;
-  double thermo;
-  double light;
+  dynamic thermo;
+  dynamic light;
 
   History(this.tarih, this.thermo, this.light);
 
   History.fromJson(Map<dynamic, dynamic> json)
-      : this(json["tarih"] as Timestamp, json["thermo"] as double,
-            json["light"] as double);
+      : this(json["tarih"] as Timestamp, json["thermo"], json["light"]);
 
   Map<String, Object> toJson() =>
       {"tarih": tarih, "thermo": thermo, "light": light};
