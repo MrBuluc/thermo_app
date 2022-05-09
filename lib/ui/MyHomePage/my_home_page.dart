@@ -108,9 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    child: const Text(
-                      "Turn On Light",
-                      style: TextStyle(fontSize: 20),
+                    child: Text(
+                      getTurnLight(),
+                      style: const TextStyle(fontSize: 20),
                     ),
                     onPressed: () {
                       turnOnOffLight();
@@ -178,6 +178,17 @@ class _MyHomePageState extends State<MyHomePage> {
       kind == Kind.thermo ? "Temperature" : "Amount of light",
       style: const TextStyle(fontSize: 20),
     );
+  }
+
+  String getTurnLight() {
+    String turnLightStr = "Turn ";
+    if (turnLight) {
+      turnLightStr += "Off ";
+    } else {
+      turnLightStr += "On ";
+    }
+    turnLightStr += "Light";
+    return turnLightStr;
   }
 
   Future turnOnOffLight() async {
