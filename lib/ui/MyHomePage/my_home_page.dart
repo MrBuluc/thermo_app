@@ -17,9 +17,14 @@ class MyHomePage extends StatefulWidget {
 enum Kind { thermo, light }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double thermo = 0, light = 0, thermoFontSize = 14, lightFontSize = 10.5;
+  double thermo = 0, thermoFontSize = 14, lightFontSize = 15.5;
 
-  int minA = -50, thermoMaxA = 50, newMinA = 0, newMaxA = 50, lightMaxA = 1023;
+  int minA = -50,
+      thermoMaxA = 50,
+      newMinA = 0,
+      newMaxA = 50,
+      lightMaxA = 1023,
+      light = 0;
 
   Timestamp now = Timestamp.now();
 
@@ -75,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(
           children: [
             SizedBox(
-              height: 500,
+              height: 400,
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -86,8 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       thermo.toString(),
                       Kind.thermo,
                     ),
-                    buildFaProgressBar(
-                        light.toInt(), light.toString(), Kind.light)
+                    buildFaProgressBar(light, light.toString(), Kind.light)
                   ],
                 ),
               ),
@@ -129,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Map value = event.snapshot.value;
         setState(() {
           thermo = toDouble(value["thermo"]);
-          light = toDouble(value["light"]);
+          light = value["light"];
           turnLight = value["turnLight"];
           now = Timestamp.now();
         });
